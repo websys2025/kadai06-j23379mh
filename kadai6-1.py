@@ -18,7 +18,24 @@ params = {
   "replaceSpChars":"0"
 }
 
-response = requests.get(API_URL, params=params)
-# Process the response
-data = response.json()
-print(data)
+json = requests.get(API_URL, params=params).json()
+data = json["GET_STATS_DATA"]['STATISTICAL_DATA']['DATA_INF']['VALUE']
+
+df = pd.DataFrame(data)
+meta_info = json['GET_STATS_DATA']['STATISTICAL_DATA']['CLASS_INF']['CLASS_OBJ']
+
+year = {}
+cat = {}
+for d in meta_info:
+    if d["@id"] == "cat03":
+        for c in d["CLASS"]:
+            cat[c["@code"]] = c["@name"]
+
+    if d["@id"] == "time":
+        for y in d["CLASS"]:
+            year[y["@code"]] = y["@name"]
+
+for value in data:
+    #総数、取り消しは含まない
+    if value["@cat03"] == "370" and value["@cat02"] == "100" and value["@cat01"] == "100":
+        print(f"{cat[value["@cat03"]]} {year[value['@time']]} {value['$']}{value['@unit']}")
