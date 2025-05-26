@@ -1,8 +1,10 @@
 # 戸籍統計 種類別届出事件数
+# 氏や名の変更許可の申立をして、認められた人数
+# 読みづらい(キラキラネームなど)、性別違和・性別不合など正当な理由がある場合に認められる
 
 import requests
 
-APP_ID = "7939247f401b39af311e89cc01e40cc1dd2889c8"
+APP_ID = ""
 API_URL  = "http://api.e-stat.go.jp/rest/3.0/app/json/getStatsData"
 
 params = {
