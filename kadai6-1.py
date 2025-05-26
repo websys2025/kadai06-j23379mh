@@ -1,9 +1,8 @@
 # 戸籍統計 種類別届出事件数
 
 import requests
-import pandas as pd
 
-APP_ID = ""
+APP_ID = "7939247f401b39af311e89cc01e40cc1dd2889c8"
 API_URL  = "http://api.e-stat.go.jp/rest/3.0/app/json/getStatsData"
 
 params = {
@@ -21,21 +20,23 @@ params = {
 json = requests.get(API_URL, params=params).json()
 data = json["GET_STATS_DATA"]['STATISTICAL_DATA']['DATA_INF']['VALUE']
 
-df = pd.DataFrame(data)
 meta_info = json['GET_STATS_DATA']['STATISTICAL_DATA']['CLASS_INF']['CLASS_OBJ']
 
 year = {}
-cat = {}
 for d in meta_info:
-    if d["@id"] == "cat03":
-        for c in d["CLASS"]:
-            cat[c["@code"]] = c["@name"]
-
     if d["@id"] == "time":
         for y in d["CLASS"]:
             year[y["@code"]] = y["@name"]
 
+name0 = []#氏の変更
+name1 = []#名の変更
+
+
 for value in data:
     #総数、取り消しは含まない
-    if value["@cat03"] == "370" and value["@cat02"] == "100" and value["@cat01"] == "100":
-        print(f"{cat[value["@cat03"]]} {year[value['@time']]} {value['$']}{value['@unit']}")
+    if value["@cat02"] == "100" and value["@cat01"] == "100":
+        if value["@cat03"] == "370":name0.append(year[value['@time']]+" "+value['$']+value['@unit'])
+        elif value["@cat03"] == "420":name1.append(value['$']+value['@unit'])
+        
+print("氏の変更, 名の変更")
+for i in range(len(name0)-1):print(name0[i]+", "+name1[i])
